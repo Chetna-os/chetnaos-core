@@ -1,3 +1,13 @@
+from fastapi import FastAPI
+from backend.api.middleware.logging_middleware import logging_middleware
+from backend.api.middleware.auth_middleware import auth_middleware
+from backend.api.middleware.rate_limit_middleware import rate_limit_middleware
+
+app = FastAPI(title="ChetnaOS API")
+
+app.middleware("http")(logging_middleware)
+app.middleware("http")(auth_middleware)
+app.middleware("http")(rate_limit_middleware)
 # backend/agi/goal_agent.py
 
 from typing import Dict, Any
