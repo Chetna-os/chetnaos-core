@@ -1,84 +1,128 @@
-from fastapi import FastAPI
+"""
+ChetnaOS — app.py
+-----------------
+Single entry point of the ChetnaOS runtime.
+
+Responsibilities:
+- Initialize FastAPI
+- Attach middleware
+- Bind BrainRouterAdvanced
+- Expose clean execution endpoint
+- Keep AGI logic OUT of this file
+"""
+
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from typing import Dict, Any
+import logging
+import time
+
+# --------------------------------------------------
+# Core Orchestration
+# --------------------------------------------------
+from backend.orchestrator.brain_router_advanced import BrainRouterAdvanced
+
+# --------------------------------------------------
+# Middleware
+# --------------------------------------------------
 from backend.api.middleware.logging_middleware import logging_middleware
 from backend.api.middleware.auth_middleware import auth_middleware
 from backend.api.middleware.rate_limit_middleware import rate_limit_middleware
 
-app = FastAPI(title="ChetnaOS API")
+# --------------------------------------------------
+# Monitoring
+# --------------------------------------------------
+from backend.monitoring.health import health_check
 
+# --------------------------------------------------
+# App Initialization
+# --------------------------------------------------
+app = FastAPI(
+    title="ChetnaOS",
+    version="0.9.0",
+    description="AGI-ready cognitive operating system runtime"
+)
+
+logger = logging.getLogger("ChetnaOS")
+logging.basicConfig(level=logging.INFO)
+
+# --------------------------------------------------
+# Middleware Wiring
+# --------------------------------------------------
 app.middleware("http")(logging_middleware)
 app.middleware("http")(auth_middleware)
 app.middleware("http")(rate_limit_middleware)
-# backend/agi/goal_agent.py
 
-from typing import Dict, Any
-from backend.agi.planning import Planner
-from backend.agi.reflection_loop import ReflectionLoop
-from backend.agi.world_state import WorldState
+# --------------------------------------------------
+# Brain Router (SINGLE INSTANCE)
+# --------------------------------------------------
+brain_router = BrainRouterAdvanced()
+
+# --------------------------------------------------
+# Request / Response Models
+# --------------------------------------------------
+class ProcessRequest(BaseModel):
+    input: str
+    context: Dict[str, Any] | None = None
 
 
-class GoalAgent:
+class ProcessResponse(BaseModel):
+    status: str
+    trace_id: str
+    output: Dict[str, Any] | None = None
+    reason: str | None = None
+
+
+# --------------------------------------------------
+# Routes
+# --------------------------------------------------
+
+@app.get("/health")
+def health():
     """
-    Autonomous Goal Execution Controller of ChetnaOS.
+    Runtime health & readiness probe
     """
+    return health_check()
 
-    def _init_(self):
-        self.planner = Planner()
-        self.reflector = ReflectionLoop()
-        self.world = WorldState()
 
-    async def run_goal(self, goal: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Full AGI loop:
-        Goal → Plan → Execute → Reflect → Update World
-        """
+@app.post("/process", response_model=ProcessResponse)
+def process(request: ProcessRequest):
+    """
+    Main cognitive execution endpoint
+    """
+    start_time = time.time()
 
-        plan = self.planner.create_plan(goal)
+    try:
+        result = brain_router.route(
+            user_input=request.input,
+            context=request.context or {}
+        )
 
-        execution_results = []
+        return ProcessResponse(
+            status=result.get("status", "success"),
+            trace_id=result.get("trace_id"),
+            output=result.get("output"),
+            reason=result.get("reason")
+        )
 
-        for step in plan:
-            result = await self._execute_step(step)
-            execution_results.append(result)
+    except Exception as e:
+        logger.exception("Fatal processing error")
 
-            reflection = self.reflector.reflect(step, result)
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
 
-            # Learning impact on world state
-            if result.get("income"):
-                self.world.record_income(result["income"])
 
-        return {
-            "goal": goal,
-            "plan": plan,
-            "results": execution_results,
-            "final_world_state": self.world.snapshot()
-        }
+# --------------------------------------------------
+# Boot Marker (IMPORTANT for AGI autonomy later)
+# --------------------------------------------------
+@app.on_event("startup")
+def on_startup():
+    logger.info("🟢 ChetnaOS runtime started")
 
-    async def _execute_step(self, step: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Fake executor for now — later connect real agents here
-        """
-        action = step.get("action")
 
-        if action == "collect_lead":
-            self.world.add_lead({"source": "whatsapp", "status": "new"})
-            return {"success": True}
-
-        elif action == "close_deals":
-            self.world.record_income(50000)  # Sample income
-            return {"success": True, "income": 50000}
-
-        else:
-            return {"success": True}
-# quick test snippet (run with python -m asyncio)
-import asyncio
-from backend.agents.sale_agent import SalesAgent
-
-async def main():
-    a = SalesAgent(client_id="demo", config={"project_info": {"name": "Kalpavriksha", "min_price": "25 Lakhs"}})
-    r = await a.process("Hi, kitna price hai?", {})
-    print(r)
-
-asyncio.run(main())
-      from backend.scientific_laws.law_engine import ScientificLawEngine
-
-law_engine = ScientificLawEngine()
+@app.on_event("shutdown")
+def on_shutdown():
+    
+    logger.info("🔴 ChetnaOS runtime shutting down")
