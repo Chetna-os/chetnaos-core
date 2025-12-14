@@ -1,16 +1,32 @@
-class SalesWorkflow:
-    def run(self, context: dict):
-        if not context.get("qualified"):
-            context["action"] = "nurture"
-            return context
+from typing import Dict, Any
 
-        score = context.get("lead_score", 0)
+
+class SalesFlow:
+    """
+    Sales-specific workflow handler.
+    """
+
+    def execute(
+        self,
+        user_input: str,
+        intent: str,
+        context: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """
+        Execute the sales workflow.
+        """
+        score = context.get("lead_score", 50)
 
         if score >= 90:
-            context["action"] = "close_now"
+            action = "close_now"
         elif score >= 70:
-            context["action"] = "demo_call"
+            action = "demo_call"
         else:
-            context["action"] = "follow_up"
+            action = "follow_up"
 
-        return context
+        return {
+            "workflow": "sales",
+            "action": action,
+            "message": f"Sales flow executed for: {user_input}",
+            "intent": intent
+        }

@@ -6,7 +6,7 @@ class Metrics:
     Simple in-memory metrics tracker.
     """
 
-    def _init_(self):
+    def __init__(self):
         self.counters = {}
         self.timings = {}
 
@@ -27,3 +27,13 @@ class Metrics:
                 for k, v in self.timings.items()
             }
         }
+
+
+_metrics = Metrics()
+
+
+def record_metric(name: str, value: float):
+    """
+    Record a timing metric.
+    """
+    _metrics.record_time(name, value)

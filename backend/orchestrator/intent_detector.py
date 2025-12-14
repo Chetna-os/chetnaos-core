@@ -3,11 +3,12 @@ class IntentDetector:
     Detects user intent from incoming text.
     """
 
-    def _init_(self):
+    def __init__(self):
         self.intent_map = {
             "sales": ["price", "cost", "buy", "purchase", "book", "investment"],
             "goal": ["goal", "target", "automate", "achieve"],
             "support": ["help", "issue", "problem", "error"],
+            "lead": ["lead", "contact", "prospect"],
             "chat": ["hi", "hello", "namaste", "how", "what", "who"]
         }
 
@@ -22,4 +23,4 @@ class IntentDetector:
                 if word in text:
                     return intent
 
-        return "chat"
+        return "custom"

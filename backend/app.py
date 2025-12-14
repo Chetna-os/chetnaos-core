@@ -8,35 +8,22 @@ Responsibilities:
 - Attach middleware
 - Bind BrainRouterAdvanced
 - Expose clean execution endpoint
-- Keep AGI logic OUT of this file
+- Serve frontend static files
 """
 
 from fastapi import FastAPI, HTTPException
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Dict, Any
 import logging
 import time
+import os
 
-# --------------------------------------------------
-# Core Orchestration
-# --------------------------------------------------
 from backend.orchestrator.brain_router_advanced import BrainRouterAdvanced
-
-# --------------------------------------------------
-# Middleware
-# --------------------------------------------------
-from backend.api.middleware.logging_middleware import logging_middleware
-from backend.api.middleware.auth_middleware import auth_middleware
-from backend.api.middleware.rate_limit_middleware import rate_limit_middleware
-
-# --------------------------------------------------
-# Monitoring
-# --------------------------------------------------
 from backend.monitoring.health import health_check
 
-# --------------------------------------------------
-# App Initialization
-# --------------------------------------------------
 app = FastAPI(
     title="ChetnaOS",
     version="0.9.0",
@@ -46,21 +33,17 @@ app = FastAPI(
 logger = logging.getLogger("ChetnaOS")
 logging.basicConfig(level=logging.INFO)
 
-# --------------------------------------------------
-# Middleware Wiring
-# --------------------------------------------------
-app.middleware("http")(logging_middleware)
-app.middleware("http")(auth_middleware)
-app.middleware("http")(rate_limit_middleware)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-# --------------------------------------------------
-# Brain Router (SINGLE INSTANCE)
-# --------------------------------------------------
 brain_router = BrainRouterAdvanced()
 
-# --------------------------------------------------
-# Request / Response Models
-# --------------------------------------------------
+
 class ProcessRequest(BaseModel):
     input: str
     context: Dict[str, Any] | None = None
@@ -72,10 +55,6 @@ class ProcessResponse(BaseModel):
     output: Dict[str, Any] | None = None
     reason: str | None = None
 
-
-# --------------------------------------------------
-# Routes
-# --------------------------------------------------
 
 @app.get("/health")
 def health():
@@ -107,22 +86,28 @@ def process(request: ProcessRequest):
 
     except Exception as e:
         logger.exception("Fatal processing error")
-
         raise HTTPException(
             status_code=500,
             detail=str(e)
         )
 
 
-# --------------------------------------------------
-# Boot Marker (IMPORTANT for AGI autonomy later)
-# --------------------------------------------------
+@app.get("/")
+async def serve_frontend():
+    """
+    Serve the frontend index.html
+    """
+    return FileResponse("frontend/index.html")
+
+
+app.mount("/static", StaticFiles(directory="frontend"), name="static")
+
+
 @app.on_event("startup")
 def on_startup():
-    logger.info("🟢 ChetnaOS runtime started")
+    logger.info("ChetnaOS runtime started")
 
 
 @app.on_event("shutdown")
 def on_shutdown():
-    
-    logger.info("🔴 ChetnaOS runtime shutting down")
+    logger.info("ChetnaOS runtime shutting down")

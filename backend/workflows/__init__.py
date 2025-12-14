@@ -1,9 +1,9 @@
-from .custom_flow import CustomWorkflow
-from .lead_flow import LeadWorkflow
-from .sales_flow import SalesWorkflow
+from .custom_flow import CustomFlow
+from .lead_flow import LeadFlow
+from .sales_flow import SalesFlow
 
-_all_ = [
-    "CustomWorkflow",
-    "LeadWorkflow",
-    "SalesWorkflow",
+__all__ = [
+    "CustomFlow",
+    "LeadFlow",
+    "SalesFlow",
 ]
