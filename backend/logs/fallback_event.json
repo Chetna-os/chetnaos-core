@@ -1,0 +1,10 @@
+{
+  "meta": {
+    "purpose": "Authoritative log of fallback decisions",
+    "authority": "fallback_manager",
+    "write_policy": "append_only",
+    "decision_override": "not_allowed",
+    "version": "v0.1"
+  },
+  "events": []
+}

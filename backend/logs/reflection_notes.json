@@ -1,0 +1,10 @@
+{
+  "meta": {
+    "purpose": "Passive reflection log for ChetnaOS",
+    "write_policy": "append_only",
+    "decision_rights": "none",
+    "created_by": "system",
+    "version": "v0.1"
+  },
+  "entries": []
+}

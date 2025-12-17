@@ -1,0 +1,22 @@
+{
+  "meta": {
+    "purpose": "Authoritative log of fallback decisions",
+    "authority": "fallback_manager",
+    "write_policy": "append_only",
+    "decision_override": "not_allowed",
+    "version": "v0.1"
+  },
+  "events": [
+    {
+      "timestamp": "2025-12-17T13:31:44.045432",
+      "fallback_level": 3,
+      "action": "REFLECTION",
+      "signals": {
+        "uncertainty": 0.9,
+        "cost": 50.0,
+        "runtime": 10.0,
+        "dharma_violation": false
+      }
+    }
+  ]
+}

@@ -13,12 +13,8 @@ class CustomFlow:
     def add_step(self, step_callable):
         self.steps.append(step_callable)
 
-    def execute(
-        self,
-        user_input: str,
-        intent: str,
-        context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def execute(self, user_input: str, intent: str,
+                context: Dict[str, Any]) -> Dict[str, Any]:
         """
         Execute the custom workflow.
         """
