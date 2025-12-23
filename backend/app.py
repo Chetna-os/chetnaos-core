@@ -21,17 +21,28 @@ import logging
 import time
 import os
 
+logger = logging.getLogger("ChetnaOS")
+logging.basicConfig(level=logging.INFO)
+
+# 🔌 LLM BOOTSTRAP (ONE TIME ONLY)
+from backend.integrations.llm import LLMRegistry
+from backend.integrations.llm.groq_provider import GroqProvider
+
+try:
+    LLMRegistry.register(
+        GroqProvider({
+            "model": "llama3-70b-8192",
+            "max_tokens": 512
+        }))
+except ValueError as e:
+    logger.warning(f"LLM Provider registration skipped: {e}")
+
 from backend.orchestrator.brain_router_advanced import BrainRouterAdvanced
 from backend.monitoring.health import health_check
 
-app = FastAPI(
-    title="ChetnaOS",
-    version="0.9.0",
-    description="AGI-ready cognitive operating system runtime"
-)
-
-logger = logging.getLogger("ChetnaOS")
-logging.basicConfig(level=logging.INFO)
+app = FastAPI(title="ChetnaOS",
+              version="0.9.0",
+              description="AGI-ready cognitive operating system runtime")
 
 app.add_middleware(
     CORSMiddleware,
@@ -72,24 +83,17 @@ def process(request: ProcessRequest):
     start_time = time.time()
 
     try:
-        result = brain_router.route(
-            user_input=request.input,
-            context=request.context or {}
-        )
+        result = brain_router.route(user_input=request.input,
+                                    context=request.context or {})
 
-        return ProcessResponse(
-            status=result.get("status", "success"),
-            trace_id=result.get("trace_id"),
-            output=result.get("output"),
-            reason=result.get("reason")
-        )
+        return ProcessResponse(status=result.get("status", "success"),
+                               trace_id=result.get("trace_id"),
+                               output=result.get("output"),
+                               reason=result.get("reason"))
 
     except Exception as e:
         logger.exception("Fatal processing error")
-        raise HTTPException(
-            status_code=500,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.get("/")

@@ -21,7 +21,7 @@ class CostGuard:
     _daily_cost_used: float = 0.0
     _last_reset: datetime = datetime.utcnow()
 
-    def _init_(self, provider: str, cost_per_1k_tokens: float):
+    def __init__(self, provider: str, cost_per_1k_tokens: float):
         self.provider = provider
         self.cost_per_1k_tokens = cost_per_1k_tokens
 

@@ -21,7 +21,7 @@ class BaseLLMProvider(ABC):
     Every LLM backend must implement this contract.
     """
 
-    def _init_(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {}
 
     @abstractmethod

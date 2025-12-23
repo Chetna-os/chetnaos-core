@@ -8,7 +8,8 @@ Purpose:
 
 Author: ChetnaOS Core
 """
-
+from backend.nature_control import TemporalGuard, SilenceEngine, RestCycle, DecayRules, Limits
+from backend.adapters.speak_adapter import SpeakAdapter
 from typing import Dict, Any, Optional
 import uuid
 import time
@@ -30,7 +31,6 @@ from backend.workflows.lead_flow import LeadFlow
 # --- Monitoring ---
 from backend.monitoring.metrics import record_metric
 
-
 logger = logging.getLogger("BrainRouterAdvanced")
 logger.setLevel(logging.INFO)
 
@@ -50,6 +50,11 @@ class BrainRouterAdvanced:
         self.priority_engine = PriorityEngine()
         self.dharma_net = DharmaNet()
         self.reflection_engine = ReflectionEngine()
+        self.temporal = TemporalGuard(cooldown_sec=1)
+        self.silence = SilenceEngine(min_confidence=0.35)
+        self.rest = RestCycle(interval_sec=300)
+        self.decay = DecayRules(ttl_sec=3600, min_score=1)
+        self.limits = Limits(max_autonomy_sec=10, max_tokens=1200)
 
         # Workflow registry (extensible)
         self.workflows = {
@@ -64,11 +69,9 @@ class BrainRouterAdvanced:
     # Public Entry Point
     # ------------------------------------------------------------------
 
-    def route(
-        self,
-        user_input: str,
-        context: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
+    def route(self,
+              user_input: str,
+              context: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """
         Main AGI routing entry.
 
@@ -96,11 +99,9 @@ class BrainRouterAdvanced:
         logger.info(f"[{trace_id}] Priority score: {priority}")
 
         # 3️⃣ Dharma Validation
-        dharma_result = self.dharma_net.validate(
-            intent=intent,
-            priority=priority,
-            context=context
-        )
+        dharma_result = self.dharma_net.validate(intent=intent,
+                                                 priority=priority,
+                                                 context=context)
 
         if not dharma_result["allowed"]:
             logger.warning(f"[{trace_id}] Dharma violation detected")
@@ -116,17 +117,23 @@ class BrainRouterAdvanced:
 
         # 4️⃣ Workflow Selection
         workflow = self._select_workflow(intent)
-        logger.info(f"[{trace_id}] Selected workflow: {workflow._class.name_}")
+        logger.info(
+            f"[{trace_id}] Selected workflow:{workflow.__class__.__name__}")
 
         # 5️⃣ Execute Workflow
-        output = workflow.execute(
-            user_input=user_input,
-            intent=intent,
-            context=context
-        )
+        output = workflow.execute(user_input=user_input,
+                                  intent=intent,
+                                  context=context)
 
         # 6️⃣ Reflection Loop
         self._reflect(user_input, intent, output, context)
+        # Decay memory if present
+        memory = context.get("memory", {})
+        self.decay.apply(memory)
+
+        # Rest cycle (non-blocking)
+        if self.rest.due():
+            self.rest.run(memory)
 
         # 7️⃣ Metrics
         latency = time.time() - start_time
@@ -134,13 +141,15 @@ class BrainRouterAdvanced:
 
         logger.info(f"[{trace_id}] Routing completed in {latency:.2f}s")
 
-        return {
+        final_response = {
             "status": "success",
             "intent": intent,
             "priority": priority,
             "output": output,
             "trace_id": trace_id,
         }
+
+        return SpeakAdapter.format(final_response)
 
     # ------------------------------------------------------------------
     # Internal Helpers
@@ -153,22 +162,15 @@ class BrainRouterAdvanced:
         """
         return self.workflows.get(intent, self.workflows["custom"])
 
-    def _reflect(
-        self,
-        user_input: str,
-        intent: str,
-        output: Dict[str, Any],
-        context: Dict[str, Any]
-    ):
+    def _reflect(self, user_input: str, intent: str, output: Dict[str, Any],
+                 context: Dict[str, Any]):
         """
         Feed experience back into reflection engine.
         """
         try:
-            self.reflection_engine.record(
-                user_input=user_input,
-                intent=intent,
-                output=output,
-                context=context
-            )
+            self.reflection_engine.record(user_input=user_input,
+                                          intent=intent,
+                                          output=output,
+                                          context=context)
         except Exception as e:
             logger.error(f"Reflection failed: {e}")

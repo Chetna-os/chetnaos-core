@@ -2,8 +2,8 @@ import time
 import os
 from typing import Dict, Any, List, Optional
 
-from integrations.llm import BaseLLMProvider
-from integrations.llm.cost_guard import CostGuard
+from backend.integrations.llm import BaseLLMProvider
+from backend.integrations.llm.cost_gaurd import CostGuard
 
 
 class GroqProvider(BaseLLMProvider):
@@ -12,8 +12,8 @@ class GroqProvider(BaseLLMProvider):
     High-speed, low-cost inference backend
     """
 
-    def _init_(self, config: Optional[Dict[str, Any]] = None):
-        super()._init_(config)
+    def __init__(self, config: Optional[Dict[str, Any]] = None):
+        super().__init__(config)
         self.api_key = self.config.get("api_key") or os.getenv("GROQ_API_KEY")
         self.model = self.config.get("model", "llama3-70b-8192")
 

@@ -1,0 +1,82 @@
+You are a senior AGI systems engineer and Python architect.
+
+Your task is to AUDIT, NOT REWRITE, the existing codebase.
+
+Project name: ChetnaOS
+Goal: Stabilize Phase-1 cognitive runtime without breaking architecture.
+
+STRICT RULES (MUST FOLLOW):
+1. DO NOT restructure folders.
+2. DO NOT rename existing files or classes.
+3. DO NOT rewrite large blocks of working code.
+4. DO NOT add new frameworks or abstractions.
+5. DO NOT assume missing features — only analyze what exists.
+6. Make MINIMAL, SURGICAL fixes only where strictly required.
+7. If something is already implemented correctly, explicitly mark it as DONE.
+
+SCAN SCOPE (READ-ONLY FIRST):
+- backend/app.py (entry point)
+- backend/orchestrator/brain_router_advanced.py
+- backend/integrations/llm/*
+- backend/integrations/llm/__init__.py
+- backend/integrations/llm/cost_guard.py
+- backend/workflows/*
+- backend/memory/*
+- backend/reflection/*
+- backend/nature_control/*
+- backend/scientific_laws/*
+- backend/trinetra/*
+- backend/monitoring/*
+- backend/config/*
+- frontend (only to confirm linkage, no UI rewrite)
+
+PRIMARY OBJECTIVES:
+1. Verify that all Python imports are correct and consistent with:
+   → absolute imports starting from `backend.`
+2. Detect and fix ONLY:
+   - ModuleNotFoundError risks
+   - Incorrect import paths
+   - Duplicate responsibility (e.g. double cost guard)
+3. Confirm LLM integration flow:
+   - BaseLLMProvider
+   - LLMRegistry (single source of truth)
+   - GroqProvider registration
+4. Verify that app.py correctly initializes:
+   - BrainRouterAdvanced
+   - LLMRegistry (if present)
+   - Runtime health endpoint
+5. Ensure that the system can boot without import/runtime errors.
+
+REPORT FORMAT (MANDATORY):
+Return results in EXACTLY this structure:
+
+SECTION 1 — ARCHITECTURE STATUS
+- What layers are COMPLETE
+- What layers are PARTIAL
+- What layers are PLACEHOLDERS
+(No opinions, only factual)
+
+SECTION 2 — CONFIRMED CORRECT (DO NOT TOUCH)
+- List files/modules that are already correct
+
+SECTION 3 — REQUIRED FIXES (MINIMAL)
+For each fix:
+- File path
+- Exact line(s)
+- What to change
+- Why (1 line max)
+
+SECTION 4 — REDUNDANCY CHECK
+- Identify any duplicated guards, policies, or controls
+- Recommend which ONE to keep (do not delete yet)
+
+SECTION 5 — PHASE-1 READINESS VERDICT
+- Can Phase-1 run safely? (YES / NO)
+- If NO, list blocking issues only (max 3)
+
+IMPORTANT:
+- DO NOT implement future phases (AGI/ASI).
+- DO NOT add Mistral or new models unless explicitly required.
+- Treat this as a stabilization audit, not feature development.
+
+Think like a production AGI engineer, not a tutorial bot.

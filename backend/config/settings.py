@@ -8,7 +8,7 @@ from pathlib import Path
 # Core Paths
 # -------------------------------------------------
 
-BASE_DIR = Path(_file_).resolve().parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 BACKEND_DIR = BASE_DIR / "backend"
 CLIENT_PROJECTS_DIR = BASE_DIR / "client_projects"
 

@@ -3,7 +3,7 @@ class MemoryEngine:
     Central memory controller for ChetnaOS.
     """
 
-    def _init_(self, semantic_index, episodic_memory):
+    def __init__(self, semantic_index, episodic_memory):
         self.semantic = semantic_index
         self.episodic = episodic_memory
 

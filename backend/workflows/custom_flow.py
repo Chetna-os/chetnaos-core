@@ -1,3 +1,4 @@
+from backend.integrations.llm import LLMRegistry
 from typing import Dict, Any
 
 
@@ -16,10 +17,28 @@ class CustomFlow:
     def execute(self, user_input: str, intent: str,
                 context: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Execute the custom workflow.
+        Execute the custom workflow using active LLM.
         """
+
+        llm = LLMRegistry.get()  # 🔥 SINGLE SOURCE OF TRUTH
+
+        prompt = f"""
+    User Input: {user_input}
+    Detected Intent: {intent}
+    Context: {context}
+
+    Respond helpfully and clearly.
+    """
+
+        response = llm.generate(prompt=prompt,
+                                context=[{
+                                    "role": "user",
+                                    "content": user_input
+                                }])
+
         return {
-            "workflow": "custom",
-            "message": f"Processed input: {user_input}",
-            "intent": intent
+            "workflow": self.name,
+            "llm_model": response.get("model"),
+            "output": response.get("text"),
+            "tokens_used": response.get("tokens_used"),
         }

@@ -8,7 +8,7 @@ from .homeostasis_controller import HomeostasisController
 
 
 class ScientificLawEngine:
-    def _init_(self):
+    def __init__(self):
         self.energy = EnergyController()
         self.entropy = EntropyGuard()
         self.causality = CausalityChecker()

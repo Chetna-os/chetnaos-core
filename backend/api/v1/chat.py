@@ -5,6 +5,7 @@ router = APIRouter(prefix="/chat", tags=["Chat"])
 
 brain = BrainRouter()
 
+
 @router.post("/")
 async def chat_endpoint(payload: dict):
     """
@@ -20,6 +21,9 @@ async def chat_endpoint(payload: dict):
     response = await brain.route(text, context)
 
     return {
-        "success": True,
-        "response": response
+        "success":
+        True,
+        "text":
+        response.get("output", {}).get("message") or response.get("text")
+        or str(response)
     }
