@@ -47,8 +47,23 @@ class BrainRouterAdvanced:
     """
 
     def __init__(self):
-        from backend.core.founder_queue import FounderQueue
-        self.founder_queue = FounderQueue()
+        try:
+            from backend.core.founder_queue import FounderQueue
+            self.founder_queue = FounderQueue()
+        except ImportError:
+            self.founder_queue = None
+            logger.warning("FounderQueue not found, proceeding without it")
+
+        self.wisdom_layer = None
+        try:
+            # Check if wisdom directory exists
+            import os
+            if os.path.exists("backend/wisdom"):
+                from backend.wisdom.wisdom_layer import WisdomLayer
+                self.wisdom_layer = WisdomLayer()
+        except ImportError:
+            logger.warning("WisdomLayer not found, proceeding with defaults")
+
         self.intent_detector = IntentDetector()
         self.priority_engine = PriorityEngine()
         self.dharma_net = DharmaNet()
@@ -118,14 +133,17 @@ class BrainRouterAdvanced:
             }
 
         # 4️⃣ Wisdom Layer (Buddhi / Wisdom Gate)
-        wisdom_output = self.wisdom_layer.evaluate(
-            intent=intent,
-            context=context,
-            priority=priority,
-            trace_id=trace_id
-        )
+        decision = DecisionState.ALLOW.value
+        wisdom_output = {"verdict": decision, "reason": "Default bypass"}
 
-        decision = wisdom_output.get("verdict")
+        if self.wisdom_layer:
+            wisdom_output = self.wisdom_layer.evaluate(
+                intent=intent,
+                context=context,
+                priority=priority,
+                trace_id=trace_id
+            )
+            decision = wisdom_output.get("verdict")
 
         if decision == DecisionState.REJECT.value:
             return {
@@ -134,19 +152,20 @@ class BrainRouterAdvanced:
                 "trace_id": trace_id
             }
 
-        self.founder_queue.add(trace_id, {
-            "user_input": user_input,
-            "intent": intent,
-            "priority": priority,
-            "context": context,
-            "wisdom": wisdom_output
-        })
+        if decision == DecisionState.REQUIRE_FOUNDER.value and self.founder_queue:
+            self.founder_queue.add(trace_id, {
+                "user_input": user_input,
+                "intent": intent,
+                "priority": priority,
+                "context": context,
+                "wisdom": wisdom_output
+            })
 
-        return {
-            "status": "pending_approval",
-            "reason": wisdom_output.get("reason"),
-            "trace_id": trace_id
-        }
+            return {
+                "status": "pending_approval",
+                "reason": wisdom_output.get("reason"),
+                "trace_id": trace_id
+            }
 
         if decision == DecisionState.DEFER.value:
             return {
@@ -158,12 +177,35 @@ class BrainRouterAdvanced:
         # ALLOW / ALLOW_WITH_WARNING
         context["wisdom"] = wisdom_output
 
-            self._reflect(user_input, intent, response, context)
-            return response
+        # 5️⃣ Workflow Selection
+        workflow = self._select_workflow(intent)
+        logger.info(f"[{trace_id}] Selected workflow: {workflow.__class__.__name__}")
 
-        
+        # 6️⃣ Execute Workflow
+        output = workflow.execute(
+            user_input=user_input,
+            intent=intent,
+            context=context
+        )
+
+        # 7️⃣ Reflection Loop
+        self._reflect(user_input, intent, output, context)
+
+        # 8️⃣ Metrics
+        latency = time.time() - start_time
+        record_metric("brain_router_latency", latency)
+
+        logger.info(f"[{trace_id}] Routing completed in {latency:.2f}s")
+
+        return {
+            "status": "success",
+            "intent": intent,
+            "priority": priority,
+            "output": output,
+            "trace_id": trace_id,
+        }
+
     # Internal Helpers
-
     def _select_workflow(self, intent: str):
         """
         Map intent to workflow.
@@ -183,3 +225,5 @@ class BrainRouterAdvanced:
                                           context=context)
         except Exception as e:
             logger.error(f"Reflection failed: {e}")
+
+brain_router = BrainRouterAdvanced()
