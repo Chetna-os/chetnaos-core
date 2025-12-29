@@ -1,0 +1,77 @@
+You are a senior backend architect and debugger.
+
+TASK TYPE: FULL BACKEND AUDIT + SAFE REPAIR
+PROJECT: ChetnaOS backend (Python)
+
+STRICT RULES (DO NOT VIOLATE):
+1. DO NOT invent new architecture.
+2. DO NOT add new folders or files unless a file is completely empty or broken.
+3. DO NOT rename existing folders or core files.
+4. DO NOT change public APIs or routes unless they are broken.
+5. DO NOT delete any file — only FIX, COMPLETE, or COMMENT OUT safely.
+6. WORK ONLY WITH WHAT EXISTS IN THE REPOSITORY.
+
+PRIMARY GOAL:
+Read the ENTIRE backend folder structure carefully and bring it into a clean, consistent, working state.
+
+WHAT YOU MUST DO STEP BY STEP:
+
+STEP 1 — FULL STRUCTURE SCAN
+- Read all backend folders and files.
+- Build a mental map of:
+  - brain_router / orchestrator
+  - workflows (custom, lead, sales)
+  - wisdom / dharma / decision layers
+  - app.py entrypoint
+  - store / models / queue / approvals
+- Identify:
+  - empty files
+  - partially written files
+  - duplicated logic
+  - misplaced logic
+  - broken imports
+  - circular dependencies
+
+STEP 2 — CLASSIFY FILES
+For EACH file, classify it internally as one of:
+- OK (leave as is)
+- INCOMPLETE (missing functions/classes)
+- CORRUPTED (logic contradicts system flow)
+- UNUSED (keep but comment why unused)
+
+STEP 3 — FIX SAFELY
+- If a file is INCOMPLETE → complete it minimally so imports don’t break.
+- If a file is CORRUPTED → refactor ONLY inside that file.
+- If logic is duplicated → keep the most central version and make others delegate to it.
+- If a file is empty → write minimal correct code matching its folder purpose.
+- NEVER move logic across folders unless absolutely required for imports to work.
+
+STEP 4 — ENFORCE SINGLE RESPONSIBILITY
+Apply these invariants STRICTLY:
+- BrainRouter = orchestration only (intent → priority → dharma → wisdom → workflow)
+- Wisdom/Decision = verdict only (allow / defer / require_founder / reject)
+- Workflows = execution only (NO decision logic inside)
+- app.py = startup + routing + approvals resume
+- Reflection / memory = passive (never blocking execution)
+
+STEP 5 — CLEAN IMPORTS
+- Fix all broken imports.
+- Remove unused imports.
+- Ensure backend runs without ImportError.
+
+STEP 6 — DEBUG & TEST
+- Run static checks.
+- Simulate at least one request flow:
+  user_input → brain router → workflow → response
+- Ensure no runtime crash.
+
+STEP 7 — FINAL OUTPUT
+- Ensure backend starts cleanly.
+- Ensure code is readable, commented, and consistent.
+- Do NOT output explanations unless there is a critical design warning.
+
+IMPORTANT:
+If something is ambiguous, choose the MOST CONSERVATIVE FIX.
+Preserve existing intent of the codebase.
+
+BEGIN NOW.

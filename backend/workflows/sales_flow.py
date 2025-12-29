@@ -1,32 +1,31 @@
 from typing import Dict, Any
+from backend.integrations.llm import LLMRegistry
 
 
 class SalesFlow:
     """
-    Sales-specific workflow handler.
+    Sales-specific workflow.
     """
 
-    def execute(
-        self,
-        user_input: str,
-        intent: str,
-        context: Dict[str, Any]
-    ) -> Dict[str, Any]:
-        """
-        Execute the sales workflow.
-        """
-        score = context.get("lead_score", 50)
+    def execute(self, user_input: str, intent: str,
+                context: Dict[str, Any]) -> Dict[str, Any]:
+        llm = LLMRegistry.get()
 
-        if score >= 90:
-            action = "close_now"
-        elif score >= 70:
-            action = "demo_call"
-        else:
-            action = "follow_up"
+        prompt = f"""
+        You are a sales assistant.
+
+        User Input:
+        {user_input}
+
+        Context:
+        {context}
+        """
+
+        response = llm.generate(prompt)
 
         return {
             "workflow": "sales",
-            "action": action,
-            "message": f"Sales flow executed for: {user_input}",
-            "intent": intent
+            "status": "completed",
+            "output": response,
+            "trace_id": context.get("wisdom", {}).get("trace_id")
         }

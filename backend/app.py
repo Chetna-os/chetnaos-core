@@ -115,3 +115,27 @@ def on_startup():
 @app.on_event("shutdown")
 def on_shutdown():
     logger.info("ChetnaOS runtime shutting down")
+from backend.orchestrator.brain_router_advanced import brain_router
+
+@app.post("/founder/approve/{trace_id}")
+def founder_approve(trace_id: str):
+    record = brain_router.founder_queue.approve(trace_id)
+
+    if not record:
+        return {"status": "not_found"}
+
+    payload = record["payload"]
+
+    # 🔁 Resume execution
+    workflow = brain_router._select_workflow(payload["intent"])
+    output = workflow.execute(
+        user_input=payload["user_input"],
+        intent=payload["intent"],
+        context=payload["context"]
+    )
+
+    return {
+        "status": "approved_and_executed",
+        "trace_id": trace_id,
+        "output": output
+    }

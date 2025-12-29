@@ -1,34 +1,32 @@
 from typing import Dict, Any
+from backend.integrations.llm import LLMRegistry
 
 
 class LeadFlow:
     """
-    Lead qualification workflow handler.
+    Lead qualification workflow.
+    Executes ONLY if BrainRouter allows.
     """
 
-    def execute(
-        self,
-        user_input: str,
-        intent: str,
-        context: Dict[str, Any]
-    ) -> Dict[str, Any]:
-        """
-        Execute the lead qualification workflow.
-        """
-        lead = context.get("lead", {})
-        score = 0
+    def execute(self, user_input: str, intent: str,
+                context: Dict[str, Any]) -> Dict[str, Any]:
+        llm = LLMRegistry.get()
 
-        if lead.get("budget"):
-            score += 30
-        if lead.get("urgency"):
-            score += 40
-        if lead.get("decision_maker"):
-            score += 30
+        prompt = f"""
+        You are a lead qualification agent.
+
+        User Input:
+        {user_input}
+
+        Context:
+        {context}
+        """
+
+        response = llm.generate(prompt)
 
         return {
             "workflow": "lead",
-            "lead_score": score,
-            "qualified": score >= 60,
-            "message": f"Lead flow executed for: {user_input}",
-            "intent": intent
+            "status": "completed",
+            "output": response,
+            "trace_id": context.get("wisdom", {}).get("trace_id")
         }

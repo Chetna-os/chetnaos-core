@@ -1,0 +1,7 @@
+{
+  "trace_id": "...",
+  "intent": "...",
+  "verdict": "require_founder",
+  "reason": "...",
+  "timestamp": "..."
+}

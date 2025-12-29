@@ -8,6 +8,7 @@ Purpose:
 
 Author: ChetnaOS Core
 """
+from backend.core.decision_states import DecisionState
 from backend.nature_control import TemporalGuard, SilenceEngine, RestCycle, DecayRules, Limits
 from backend.adapters.speak_adapter import SpeakAdapter
 from typing import Dict, Any, Optional
@@ -46,6 +47,8 @@ class BrainRouterAdvanced:
     """
 
     def __init__(self):
+        from backend.core.founder_queue import FounderQueue
+        self.founder_queue = FounderQueue()
         self.intent_detector = IntentDetector()
         self.priority_engine = PriorityEngine()
         self.dharma_net = DharmaNet()
@@ -99,61 +102,67 @@ class BrainRouterAdvanced:
         logger.info(f"[{trace_id}] Priority score: {priority}")
 
         # 3️⃣ Dharma Validation
-        dharma_result = self.dharma_net.validate(intent=intent,
-                                                 priority=priority,
-                                                 context=context)
+        dharma_result = self.dharma_net.validate(
+            intent=intent,
+            priority=priority,
+            context=context
+        )
 
         if not dharma_result["allowed"]:
             logger.warning(f"[{trace_id}] Dharma violation detected")
 
-            response = {
+            return {
                 "status": "blocked",
                 "reason": dharma_result["reason"],
                 "trace_id": trace_id,
             }
 
+        # 4️⃣ Wisdom Layer (Buddhi / Wisdom Gate)
+        wisdom_output = self.wisdom_layer.evaluate(
+            intent=intent,
+            context=context,
+            priority=priority,
+            trace_id=trace_id
+        )
+
+        decision = wisdom_output.get("verdict")
+
+        if decision == DecisionState.REJECT.value:
+            return {
+                "status": "blocked",
+                "reason": wisdom_output.get("reason"),
+                "trace_id": trace_id
+            }
+
+        self.founder_queue.add(trace_id, {
+            "user_input": user_input,
+            "intent": intent,
+            "priority": priority,
+            "context": context,
+            "wisdom": wisdom_output
+        })
+
+        return {
+            "status": "pending_approval",
+            "reason": wisdom_output.get("reason"),
+            "trace_id": trace_id
+        }
+
+        if decision == DecisionState.DEFER.value:
+            return {
+                "status": "deferred",
+                "reason": wisdom_output.get("reason"),
+                "trace_id": trace_id
+            }
+
+        # ALLOW / ALLOW_WITH_WARNING
+        context["wisdom"] = wisdom_output
+
             self._reflect(user_input, intent, response, context)
             return response
 
-        # 4️⃣ Workflow Selection
-        workflow = self._select_workflow(intent)
-        logger.info(
-            f"[{trace_id}] Selected workflow:{workflow.__class__.__name__}")
-
-        # 5️⃣ Execute Workflow
-        output = workflow.execute(user_input=user_input,
-                                  intent=intent,
-                                  context=context)
-
-        # 6️⃣ Reflection Loop
-        self._reflect(user_input, intent, output, context)
-        # Decay memory if present
-        memory = context.get("memory", {})
-        self.decay.apply(memory)
-
-        # Rest cycle (non-blocking)
-        if self.rest.due():
-            self.rest.run(memory)
-
-        # 7️⃣ Metrics
-        latency = time.time() - start_time
-        record_metric("brain_router_latency", latency)
-
-        logger.info(f"[{trace_id}] Routing completed in {latency:.2f}s")
-
-        final_response = {
-            "status": "success",
-            "intent": intent,
-            "priority": priority,
-            "output": output,
-            "trace_id": trace_id,
-        }
-
-        return SpeakAdapter.format(final_response)
-
-    # ------------------------------------------------------------------
+        
     # Internal Helpers
-    # ------------------------------------------------------------------
 
     def _select_workflow(self, intent: str):
         """

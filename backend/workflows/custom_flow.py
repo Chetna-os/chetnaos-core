@@ -3,9 +3,6 @@ from typing import Dict, Any
 
 
 class CustomFlow:
-    """
-    Generic custom workflow handler.
-    """
 
     def __init__(self, name="custom"):
         self.name = name
@@ -14,31 +11,25 @@ class CustomFlow:
     def add_step(self, step_callable):
         self.steps.append(step_callable)
 
-    def execute(self, user_input: str, intent: str,
-                context: Dict[str, Any]) -> Dict[str, Any]:
+    def execute(self, user_input: str, intent: str, context: dict):
         """
-        Execute the custom workflow using active LLM.
+        Workflow NEVER decides.
+        It only executes when BrainRouter allows.
         """
 
-        llm = LLMRegistry.get()  # 🔥 SINGLE SOURCE OF TRUTH
+        llm = LLMRegistry.get()  # single source of truth
 
         prompt = f"""
-    User Input: {user_input}
-    Detected Intent: {intent}
-    Context: {context}
+        User Input: {user_input}
+        Detected Intent: {intent}
+        Context: {context}
+        """
 
-    Respond helpfully and clearly.
-    """
-
-        response = llm.generate(prompt=prompt,
-                                context=[{
-                                    "role": "user",
-                                    "content": user_input
-                                }])
+        response = llm.generate(prompt)
 
         return {
             "workflow": self.name,
-            "llm_model": response.get("model"),
-            "output": response.get("text"),
-            "tokens_used": response.get("tokens_used"),
+            "status": "completed",
+            "output": response,
+            "trace_id": context.get("wisdom", {}).get("trace_id")
         }
