@@ -31,7 +31,7 @@ from backend.integrations.llm.groq_provider import GroqProvider
 try:
     LLMRegistry.register(
         GroqProvider({
-            "model": "llama3-70b-8192",
+            "model": "llama3-8b-8192",
             "max_tokens": 512
         }))
 except ValueError as e:
@@ -115,7 +115,7 @@ def on_startup():
 @app.on_event("shutdown")
 def on_shutdown():
     logger.info("ChetnaOS runtime shutting down")
-from backend.orchestrator.brain_router_advanced import brain_router
+
 
 @app.post("/founder/approve/{trace_id}")
 def founder_approve(trace_id: str):
@@ -128,11 +128,9 @@ def founder_approve(trace_id: str):
 
     # 🔁 Resume execution
     workflow = brain_router._select_workflow(payload["intent"])
-    output = workflow.execute(
-        user_input=payload["user_input"],
-        intent=payload["intent"],
-        context=payload["context"]
-    )
+    output = workflow.execute(user_input=payload["user_input"],
+                              intent=payload["intent"],
+                              context=payload["context"])
 
     return {
         "status": "approved_and_executed",

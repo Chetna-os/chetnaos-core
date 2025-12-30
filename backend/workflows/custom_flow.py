@@ -20,16 +20,40 @@ class CustomFlow:
         llm = LLMRegistry.get()  # single source of truth
 
         prompt = f"""
-        User Input: {user_input}
-        Detected Intent: {intent}
-        Context: {context}
+        You are ChetnaOS, an intelligent cognitive assistant.
+
+        Your task:
+        - Understand the user's request
+        - Generate a clear, helpful, human-readable response
+        - DO NOT repeat system context, intent, or metadata
+        - DO NOT mention models, tokens, or internal state
+
+        User request:
+        {user_input}
+
+        Respond directly to the user:
         """
 
         response = llm.generate(prompt)
+
+        # 🔒 NORMALIZE + SANITIZE LLM OUTPUT (CRITICAL FIX)
+        content = None
+
+        if isinstance(response, dict):
+            # Groq may return either `message` or `text`
+            content = response.get("message") or response.get("text")
+
+        if content:
+            # Strip prompt echo
+            for marker in ["User Input:", "Detected Intent:", "Context:"]:
+                if marker in content:
+                    content = content.split(marker, 1)[0].strip()
+
+            response = {"message": content.strip()}
 
         return {
             "workflow": self.name,
             "status": "completed",
             "output": response,
-            "trace_id": context.get("wisdom", {}).get("trace_id")
+            "trace_id": context.get("trace_id")
         }

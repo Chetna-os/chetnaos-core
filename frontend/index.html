@@ -65,22 +65,21 @@
         outputEl.innerText = "Thinking...";
 
         try {
-          const res = await fetch("/chat", {
+          const res = await fetch("/process", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              text: text,
+              input: text, // ✅ aligned with backend
               context: {},
             }),
           });
 
           const data = await res.json();
 
-          // 🔥 THIS IS THE IMPORTANT PART
-          if (data.output && data.output.message) {
-            outputEl.innerText = data.output.message;
+          if (data.output) {
+            outputEl.innerText = JSON.stringify(data.output, null, 2);
           } else {
             outputEl.innerText = JSON.stringify(data, null, 2);
           }
