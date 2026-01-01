@@ -1,7 +1,7 @@
 # backend/core/reasoning.py
 
 class ReasoningEngine:
-    def _init_(self):
+    def __init__(self):
         self.history = []
 
     def reason(self, context: dict, goal: str) -> dict:

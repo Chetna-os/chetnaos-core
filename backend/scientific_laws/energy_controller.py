@@ -1,7 +1,7 @@
 # backend/scientific_laws/energy_controller.py
 
 class EnergyController:
-    def _init_(self):
+    def __init__(self):
         self.daily_budget = 100.0   # abstract energy units
         self.used = 0.0
 

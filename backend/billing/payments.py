@@ -9,7 +9,7 @@ class PaymentService:
     Handles payment status and records.
     """
 
-    def _init_(self):
+    def __init__(self):
         # invoice_id -> payment info
         self.payments: Dict[str, Dict] = {}
 

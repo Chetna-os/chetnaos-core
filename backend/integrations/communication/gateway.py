@@ -12,7 +12,7 @@ from datetime import datetime
 
 
 class CommunicationGateway:
-    def _init_(self):
+    def __init__(self):
         self.channel_status = {
             "api": True,
             "chat": True,

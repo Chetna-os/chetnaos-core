@@ -25,16 +25,12 @@ logger = logging.getLogger("ChetnaOS")
 logging.basicConfig(level=logging.INFO)
 
 # 🔌 LLM BOOTSTRAP (ONE TIME ONLY)
-from backend.integrations.llm import LLMRegistry
-from backend.integrations.llm.groq_provider import GroqProvider
+# Initialize LLM provider via bootstrap layer (explicit, no auto-registration)
+from backend.bootstrap.llm_bootstrap import init_llm
 
 try:
-    LLMRegistry.register(
-        GroqProvider({
-            "model": "llama3-8b-8192",
-            "max_tokens": 512
-        }))
-except ValueError as e:
+    init_llm()
+except (ValueError, RuntimeError) as e:
     logger.warning(f"LLM Provider registration skipped: {e}")
 
 from backend.orchestrator.brain_router_advanced import BrainRouterAdvanced

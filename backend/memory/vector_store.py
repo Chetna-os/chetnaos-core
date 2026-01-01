@@ -7,7 +7,7 @@ class VectorStore:
     Can be replaced later with FAISS / Milvus / Pinecone.
     """
 
-    def _init_(self):
+    def __init__(self):
         self.vectors = []  # [(id, vector, metadata)]
 
     def add(self, item_id: str, vector: list[float], metadata: dict = None):

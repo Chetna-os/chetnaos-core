@@ -1,7 +1,7 @@
 # backend/core/self_model.py
 
 class SelfModel:
-    def _init_(self):
+    def __init__(self):
         self.identity = {
             "name": "Chetna",
             "version": "v1",

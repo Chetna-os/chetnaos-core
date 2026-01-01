@@ -5,7 +5,7 @@ class VirtualActuator:
     """
     Minimal virtual actuator interface - returns ack + simulated state.
     """
-    def _init_(self):
+    def __init__(self):
         self.state = {"position": [0,0,0], "holding": None}
 
     def apply(self, command: Dict[str, Any]) -> Dict[str, Any]:

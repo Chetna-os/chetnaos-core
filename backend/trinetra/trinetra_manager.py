@@ -25,7 +25,7 @@ class TrinetraManager:
     High-level orchestrator for Trinetra layer.
     Minimal, synchronous & asyncio-friendly interface.
     """
-    def _init_(self, config: Dict[str, Any] = None):
+    def __init__(self, config: Dict[str, Any] = None):
         self.config = {**CONFIG, **(config or {})}
         self.text_sensor = TextSensor()
         self.quality = DataQualityChecker()
@@ -83,5 +83,5 @@ async def demo():
     act = await manager.simulate_actuation([{"move": "forward", "steps": 1}, {"pick": "sample"}])
     print("Actuation:", act)
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     asyncio.run(demo())

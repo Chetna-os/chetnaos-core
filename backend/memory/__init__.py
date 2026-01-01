@@ -3,7 +3,7 @@ from .semantic_index import SemanticIndex
 from .episodic import EpisodicMemory
 from .memory_engine import MemoryEngine
 
-_all_ = [
+__all__ = [
     "VectorStore",
     "SemanticIndex",
     "EpisodicMemory",

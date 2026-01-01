@@ -9,8 +9,8 @@ from typing import Dict, Any, Optional, List
 from .base_agent import BaseAgent
 
 class WhatsAppAgent(BaseAgent):
-    def _init_(self, client_id: Optional[str] = None, config: Optional[Dict[str, Any]] = None):
-        super()._init_(name="WhatsAppAgent", client_id=client_id, config=config)
+    def __init__(self, client_id: Optional[str] = None, config: Optional[Dict[str, Any]] = None):
+        super().__init__(name="WhatsAppAgent", client_id=client_id, config=config)
         self.max_len = 4096
 
     def _format_quick_replies(self, options: List[str]) -> List[Dict[str, str]]:

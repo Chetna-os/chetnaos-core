@@ -48,7 +48,7 @@ class GroqProvider(BaseLLMProvider):
         self.cost_guard.record_usage(tokens_used)
 
         return {
-            "message": response_text,
+            "text": response_text,
             "tokens_used": tokens_used,
             "model": self.model,
             "latency_ms": latency_ms,

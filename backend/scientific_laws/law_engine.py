@@ -1,8 +1,8 @@
 # backend/scientific_laws/law_engine.py
 
 from .energy_controller import EnergyController
-from .entropy_guard import EntropyGuard
-from .causality_checker import CausalityChecker
+from .entropy_gaurd import EntropyGuard
+from .casuality_checker import CausalityChecker
 from .evolution_pruner import EvolutionPruner
 from .homeostasis_controller import HomeostasisController
 

@@ -6,7 +6,7 @@ from .self_model import SelfModel
 
 
 class ChetnaCore:
-    def _init_(self):
+    def __init__(self):
         self.attention = AttentionEngine()
         self.reasoning = ReasoningEngine()
         self.self_model = SelfModel()

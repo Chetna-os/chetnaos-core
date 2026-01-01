@@ -6,7 +6,7 @@ class TextSensor:
     """
     Lightweight text preprocessor and extractor.
     """
-    def _init_(self):
+    def __init__(self):
         # simple stopwords; extend as needed
         self.stopwords = {"the","is","in","at","a","an","and","or","please"}
 

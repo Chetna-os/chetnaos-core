@@ -9,7 +9,7 @@ class UsageTracker:
     Tracks per-client usage for billing & analytics.
     """
 
-    def _init_(self):
+    def __init__(self):
         # client_id -> usage data
         self.usage_store: Dict[str, Dict] = {}
 

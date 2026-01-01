@@ -6,7 +6,7 @@ class SemanticIndex:
     Semantic memory for meanings, concepts, facts.
     """
 
-    def _init_(self, embedder):
+    def __init__(self, embedder):
         self.embedder = embedder
         self.store = VectorStore()
 

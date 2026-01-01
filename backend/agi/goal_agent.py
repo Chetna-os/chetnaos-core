@@ -11,7 +11,7 @@ class GoalAgent:
     Autonomous Goal Execution Controller of ChetnaOS.
     """
 
-    def _init_(self):
+    def __init__(self):
         self.planner = Planner()
         self.reflector = ReflectionLoop()
         self.world = WorldState()

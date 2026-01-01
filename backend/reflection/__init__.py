@@ -9,7 +9,7 @@ This module exposes:
 from .dharma_net import DharmaNet
 from .reflection_engine import ReflectionEngine
 
-_all_ = [
+__all__ = [
     "DharmaNet",
     "ReflectionEngine",
 ]

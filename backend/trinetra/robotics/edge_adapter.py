@@ -7,7 +7,7 @@ class EdgeAdapter:
     Adapter to map simulator to physical robot interface.
     For now returns mapping instructions and would be extended with real drivers.
     """
-    def _init_(self, mode="sim"):
+    def __init__(self, mode="sim"):
         self.mode = mode  # "sim" or "hw"
         self.hw_endpoint = os.getenv("ROBOT_ENDPOINT", None)
 

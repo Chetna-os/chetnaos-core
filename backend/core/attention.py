@@ -1,7 +1,7 @@
 # backend/core/attention.py
 
 class AttentionEngine:
-    def _init_(self):
+    def __init__(self):
         self.current_focus = None
 
     def set_focus(self, item: str, priority: int = 1):

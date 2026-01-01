@@ -5,7 +5,7 @@ class MotionSimulator:
     """
     High-level motion simulator that uses VirtualActuator.
     """
-    def _init_(self):
+    def __init__(self):
         self.actuator = VirtualActuator()
 
     def execute(self, command: dict):

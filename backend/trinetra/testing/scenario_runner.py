@@ -10,7 +10,7 @@ class AgentTestbench:
     Simple smoke tests for agents. Accepts an async or sync callable agent(text)->response.
     Returns simple metrics.
     """
-    def _init_(self):
+    def __init__(self):
         self.smoke_samples = [
             "Hi, tell me about price.",
             "I want to book a visit.",

@@ -65,8 +65,8 @@ class AuthError(Exception):
 
 
 class AuthMiddleware(BaseHTTPMiddleware):
-    def _init_(self, app, keys: Optional[Dict[str, Dict]] = None, enforce_acl: bool = True):
-        super()._init_(app)
+    def __init__(self, app, keys: Optional[Dict[str, Dict]] = None, enforce_acl: bool = True):
+        super().__init__(app)
         # keys: api_key -> metadata
         self.keys = keys or load_api_keys()
         self.enforce_acl = enforce_acl

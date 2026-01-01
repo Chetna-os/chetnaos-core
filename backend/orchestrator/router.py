@@ -12,7 +12,7 @@ class BrainRouter:
     Core AGI Brain Router of ChetnaOS.
     """
 
-    def _init_(self):
+    def __init__(self):
         self.intent_detector = IntentDetector()
         self.priority_engine = PriorityEngine()
 

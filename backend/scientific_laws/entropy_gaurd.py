@@ -1,13 +1,14 @@
-# backend/scientific_laws/energy_controller.py
+# backend/scientific_laws/entropy_gaurd.py
 
-class EnergyController:
-    def _init_(self):
-        self.daily_budget = 100.0   # abstract energy units
-        self.used = 0.0
+class EntropyGuard:
+    def __init__(self):
+        self.max_entropy = 100.0  # abstract entropy units
+        self.current_entropy = 0.0
 
     def allow(self, action: dict) -> bool:
-        cost = action.get("energy_cost", 1.0)
-        if self.used + cost > self.daily_budget:
+        """Check if action maintains acceptable entropy levels"""
+        entropy_cost = action.get("entropy_cost", 1.0)
+        if self.current_entropy + entropy_cost > self.max_entropy:
             return False
-        self.used += cost
+        self.current_entropy += entropy_cost
         return True

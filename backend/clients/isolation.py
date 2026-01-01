@@ -8,7 +8,7 @@ class ClientIsolation:
     Ensures strict isolation between client data.
     """
 
-    def _init_(self):
+    def __init__(self):
         self._memory_store: Dict[str, Dict] = {}
 
     def get_client_memory(self, client_id: str) -> Dict:

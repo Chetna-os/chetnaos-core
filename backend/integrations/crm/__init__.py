@@ -24,7 +24,7 @@ class BaseCRMConnector(ABC):
     must follow this contract.
     """
 
-    def _init_(self, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {}
 
     @abstractmethod
@@ -67,7 +67,7 @@ class CRMRegistry:
         return cls._active_connector
 
 
-_all_ = [
+__all__ = [
     "BaseCRMConnector",
     "CRMRegistry",
 ]

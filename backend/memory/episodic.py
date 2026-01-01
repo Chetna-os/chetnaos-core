@@ -6,7 +6,7 @@ class EpisodicMemory:
     Stores time-stamped experiences.
     """
 
-    def _init_(self):
+    def __init__(self):
         self.events = []
 
     def record(self, content: str, metadata: dict = None):

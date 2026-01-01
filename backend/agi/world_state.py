@@ -10,7 +10,7 @@ class WorldState:
     This is the 'Reality Anchor' for AGI.
     """
 
-    def _init_(self):
+    def __init__(self):
         self.state: Dict[str, Any] = {
             "clients": {},
             "leads": [],

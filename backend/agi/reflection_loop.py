@@ -10,7 +10,7 @@ class ReflectionLoop:
     This is Self-Learning Loop.
     """
 
-    def _init_(self):
+    def __init__(self):
         self.history = []
 
     def reflect(self, task: Dict[str, Any], result: Dict[str, Any]) -> Dict[str, Any]:

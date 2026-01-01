@@ -9,7 +9,7 @@ class ClientManager:
     Manages active clients and their configurations.
     """
 
-    def _init_(self):
+    def __init__(self):
         self._clients: Dict[str, Dict] = {}
 
     def register_client(self, client_id: str):

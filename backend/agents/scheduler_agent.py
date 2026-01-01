@@ -10,8 +10,8 @@ import asyncio
 from .base_agent import BaseAgent
 
 class SchedulerAgent(BaseAgent):
-    def _init_(self, client_id: Optional[str] = None, config: Optional[Dict[str, Any]] = None):
-        super()._init_(name="SchedulerAgent", client_id=client_id, config=config)
+    def __init__(self, client_id: Optional[str] = None, config: Optional[Dict[str, Any]] = None):
+        super().__init__(name="SchedulerAgent", client_id=client_id, config=config)
 
     async def handle(self, text: str, context: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         # naive parse: look for "tomorrow", "today", "dd-mm" etc.

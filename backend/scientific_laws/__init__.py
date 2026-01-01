@@ -9,12 +9,12 @@ No intelligence bypasses these laws.
 
 from .law_engine import ScientificLawEngine
 from .energy_controller import EnergyController
-from .entropy_guard import EntropyGuard
-from .causality_checker import CausalityChecker
+from .entropy_gaurd import EntropyGuard
+from .casuality_checker import CausalityChecker
 from .homeostasis_controller import HomeostasisController
 from .evolution_pruner import EvolutionPruner
 
-_all_ = [
+__all__ = [
     "ScientificLawEngine",
     "EnergyController",
     "EntropyGuard",

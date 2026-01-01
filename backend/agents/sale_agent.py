@@ -26,8 +26,8 @@ class SalesAgent(BaseAgent):
         "fallback": "Aapka sawaal interesting hai — thoda aur bataiye ya mai sales team se connect kar doon."
     }
 
-    def _init_(self, client_id: Optional[str] = None, config: Optional[Dict[str, Any]] = None):
-        super()._init_(name="SalesAgent", client_id=client_id, config=config)
+    def __init__(self, client_id: Optional[str] = None, config: Optional[Dict[str, Any]] = None):
+        super().__init__(name="SalesAgent", client_id=client_id, config=config)
         self.templates = {**self.DEFAULT_TEMPLATES, **(self.config.get("templates", {}) or {})}
         self.keywords = {
             "price": ["price", "kitna", "cost", "costs", "rate", "price?"],

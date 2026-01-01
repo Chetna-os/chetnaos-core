@@ -29,7 +29,7 @@ class AgentError(Exception):
 
 
 class BaseAgent(ABC):
-    def _init_(self, name: str = "BaseAgent", client_id: Optional[str] = None, config: Optional[Dict[str, Any]] = None):
+    def __init__(self, name: str = "BaseAgent", client_id: Optional[str] = None, config: Optional[Dict[str, Any]] = None):
         self.name = name
         self.client_id = client_id
         self.config = config or {}
