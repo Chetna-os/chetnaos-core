@@ -5,7 +5,7 @@ This is a placeholder for Claude/Anthropic integration.
 Implement BaseLLMProvider interface when needed.
 """
 
-from backend.integrations.llm import BaseLLMProvider
+from integrations.llm import BaseLLMProvider
 from typing import Dict, Any, List, Optional
 
 

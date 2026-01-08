@@ -22,7 +22,7 @@ logger = logging.getLogger("ChetnaOS.Buddhi")
 # ================================
 # Decision States (LOCK THIS)
 # ================================
-from backend.core.decision_states import DecisionState
+from core.decision_states import DecisionState
     ALLOW = "allow"
     ALLOW_WITH_WARNING = "allow_with_warning"
     DEFER = "defer"

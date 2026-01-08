@@ -3,8 +3,8 @@ import os
 from groq import Groq
 from typing import Dict, Any, List, Optional
 
-from backend.integrations.llm import BaseLLMProvider
-from backend.integrations.llm.cost_gaurd import CostGuard
+from integrations.llm import BaseLLMProvider
+from integrations.llm.cost_gaurd import CostGuard
 
 
 class GroqProvider(BaseLLMProvider):

@@ -1,9 +1,9 @@
 # backend/agi/goal_agent.py
 
 from typing import Dict, Any
-from backend.agi.planning import Planner
-from backend.agi.reflection_loop import ReflectionLoop
-from backend.agi.world_state import WorldState
+from agi.planning import Planner
+from agi.reflection_loop import ReflectionLoop
+from agi.world_state import WorldState
 
 
 class GoalAgent:

@@ -8,29 +8,29 @@ Purpose:
 
 Author: ChetnaOS Core
 """
-from backend.core.decision_states import DecisionState
-from backend.nature_control import TemporalGuard, SilenceEngine, RestCycle, DecayRules, Limits
-from backend.adapters.speak_adapter import SpeakAdapter
+from core.decision_states import DecisionState
+from nature_control import TemporalGuard, SilenceEngine, RestCycle, DecayRules, Limits
+from adapters.speak_adapter import SpeakAdapter
 from typing import Dict, Any, Optional
 import uuid
 import time
 import logging
 
 # --- Core imports ---
-from backend.orchestrator.intent_detector import IntentDetector
-from backend.orchestrator.priority_engine import PriorityEngine
+from orchestrator.intent_detector import IntentDetector
+from orchestrator.priority_engine import PriorityEngine
 
 # --- Reflection & Dharma ---
-from backend.reflection.dharma_net import DharmaNet
-from backend.reflection.reflection_engine import ReflectionEngine
+from reflection.dharma_net import DharmaNet
+from reflection.reflection_engine import ReflectionEngine
 
 # --- Workflows ---
-from backend.workflows.custom_flow import CustomFlow
-from backend.workflows.sales_flow import SalesFlow
-from backend.workflows.lead_flow import LeadFlow
+from workflows.custom_flow import CustomFlow
+from workflows.sales_flow import SalesFlow
+from workflows.lead_flow import LeadFlow
 
 # --- Monitoring ---
-from backend.monitoring.metrics import record_metric
+from monitoring.metrics import record_metric
 
 logger = logging.getLogger("BrainRouterAdvanced")
 logger.setLevel(logging.INFO)
@@ -48,7 +48,7 @@ class BrainRouterAdvanced:
 
     def __init__(self):
         try:
-            from backend.core.founder_queue import FounderQueue
+            from core.founder_queue import FounderQueue
             self.founder_queue = FounderQueue()
         except ImportError:
             self.founder_queue = None
@@ -58,8 +58,8 @@ class BrainRouterAdvanced:
         try:
             # Check if wisdom directory exists
             import os
-            if os.path.exists("backend/wisdom"):
-                from backend.wisdom.wisdom_layer import WisdomLayer
+            if os.path.exists("wisdom"):
+                from wisdom.wisdom_layer import WisdomLayer
                 self.wisdom_layer = WisdomLayer()
         except ImportError:
             logger.warning("WisdomLayer not found, proceeding with defaults")
@@ -197,12 +197,34 @@ class BrainRouterAdvanced:
 
         logger.info(f"[{trace_id}] Routing completed in {latency:.2f}s")
 
+        # Normalize workflow output to extract reply text
+        reply_text = None
+        if isinstance(output, dict):
+            # Check nested output structure
+            nested_output = output.get("output")
+            if isinstance(nested_output, dict):
+                reply_text = nested_output.get("message") or nested_output.get("text") or nested_output.get("reply")
+            elif isinstance(nested_output, str):
+                reply_text = nested_output
+            # Check direct fields
+            if not reply_text:
+                reply_text = output.get("message") or output.get("text") or output.get("reply")
+        elif isinstance(output, str):
+            reply_text = output
+
+        # Fallback if no reply found
+        if not reply_text:
+            reply_text = "Request processed successfully"
+
         return {
             "status": "success",
-            "intent": intent,
-            "priority": priority,
-            "output": output,
             "trace_id": trace_id,
+            "output": {
+                "message": reply_text,
+                "intent": intent,
+                "workflow": workflow.__class__.__name__
+            },
+            "reply": reply_text  # Add direct reply field for easy extraction
         }
 
     # Internal Helpers

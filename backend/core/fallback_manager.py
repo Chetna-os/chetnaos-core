@@ -10,7 +10,7 @@ import json
 from datetime import datetime
 from typing import Dict
 
-from backend.config.fallback_config import FALLBACK_CONFIG
+from config.fallback_config import FALLBACK_CONFIG
 
 
 class FallbackManager:

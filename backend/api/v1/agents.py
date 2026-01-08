@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
-from backend.agents.sales_agent import SalesAgent
-from backend.agents.whatsapp_agent import WhatsAppAgent
-from backend.agents.custom_agent import CustomAgent
+from agents.sales_agent import SalesAgent
+from agents.whatsapp_agent import WhatsAppAgent
+from agents.custom_agent import CustomAgent
 
 router = APIRouter(prefix="/agents", tags=["Agents"])
 

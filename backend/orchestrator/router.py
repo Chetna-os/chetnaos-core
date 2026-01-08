@@ -1,10 +1,10 @@
-from backend.orchestrator.intent_detector import IntentDetector
-from backend.orchestrator.priority_engine import PriorityEngine
+from orchestrator.intent_detector import IntentDetector
+from orchestrator.priority_engine import PriorityEngine
 
-from backend.agents.sales_agent import SalesAgent
-from backend.agents.whatsapp_agent import WhatsAppAgent
-from backend.agents.custom_agent import CustomAgent
-from backend.agi.goal_agent import GoalAgent
+from agents.sales_agent import SalesAgent
+from agents.whatsapp_agent import WhatsAppAgent
+from agents.custom_agent import CustomAgent
+from agi.goal_agent import GoalAgent
 
 
 class BrainRouter:

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from backend.orchestrator.router import BrainRouter
+from orchestrator.router import BrainRouter
 
 router = APIRouter(prefix="/chat", tags=["Chat"])
 

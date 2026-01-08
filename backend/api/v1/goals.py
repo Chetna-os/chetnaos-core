@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from backend.clients.client_manager import ClientManager
+from clients.client_manager import ClientManager
 
 router = APIRouter(prefix="/client", tags=["Client Management"])
 

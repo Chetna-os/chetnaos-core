@@ -1,5 +1,5 @@
 from typing import Dict, Any
-from backend.integrations.llm import LLMRegistry
+from integrations.llm import LLMRegistry
 
 
 class SalesFlow:
